@@ -1,0 +1,42 @@
+import { User } from '../types';
+
+export const MOCK_USERS: User[] = [
+  {
+    uid: 'admin_1',
+    name: 'Rajesh Sharma',
+    email: 'admin@society.com',
+    phone: '+91 9876543210',
+    role: 'SOCIETY_ADMIN',
+    societyId: 'soc_1',
+    block: 'A',
+    unitNumber: 'A-402',
+    status: 'ACTIVE',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    uid: 'resident_1',
+    name: 'Priya Patel',
+    email: 'resident@society.com',
+    phone: '+91 9876543211',
+    role: 'RESIDENT',
+    societyId: 'soc_1',
+    block: 'B',
+    unitNumber: 'B-201',
+    occupancyType: 'OWNER',
+    status: 'ACTIVE',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    uid: 'security_1',
+    name: 'Ramesh Singh',
+    email: 'security@society.com',
+    phone: '+91 9876543212',
+    role: 'SECURITY',
+    societyId: 'soc_1',
+    status: 'ACTIVE',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+];
