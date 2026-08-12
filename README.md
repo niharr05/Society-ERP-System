@@ -15,7 +15,7 @@ graph TD
         Nav[React Navigation v7 RBAC]
     end
 
-    subgraph Backend API [Node.js + Express]
+    subgraph Backend API [Node.js + Express + tsx]
         API[Express REST Endpoints]
         Razorpay[Razorpay Payment Verification]
     end
@@ -43,7 +43,7 @@ The system provides 4 distinct persona interfaces with tailored navigation, dash
 
 | Persona Role | Key Capabilities & Features |
 | :--- | :--- |
-| 👑 **Super Admin** | Platform-level management, creating new societies, assigning society admins, system audit logs. |
+| 👑 **Super Admin** | Platform-level management, creating/onboarding new societies, assigning society admins, system audit logs. |
 | 👔 **Society Admin** | Financial dashboard, issue maintenance bills, track collections, assign complaints, publish notice board. |
 | 🏡 **Resident** | View & pay society maintenance bills (Razorpay), pre-approve visitors (Passcode/QR), raise maintenance tickets. |
 | 🛡️ **Security Guard** | Gate check-in/out console, 6-digit passcode & QR verification, walk-in visitor entry logging. |
@@ -60,24 +60,27 @@ Society/
 │   │   ├── config/            # App theme, Indigo palette (#4F46E5), mock data
 │   │   ├── features/          # Modular feature domains:
 │   │   │   ├── amenities/     # Facility & amenity booking
-│   │   │   ├── auth/          # Login, Register, Role Selector
+│   │   │   ├── auth/          # Login, Register, Role Selector (2x2 Grid)
 │   │   │   ├── billing/       # Issue bills, payment list, receipt preview
 │   │   │   ├── complaints/    # Raise & track maintenance tickets
 │   │   │   ├── dashboard/     # Role-specific analytics dashboards
 │   │   │   ├── notices/       # Society announcements & notice board
 │   │   │   ├── profile/       # User details & Live Role Persona Switcher
+│   │   │   ├── society/       # Onboard Society & Assign Admin screens
 │   │   │   └── visitors/      # Pre-approvals & Gatekeeper check-in console
 │   │   ├── navigation/        # React Navigation v7 with dynamic RBAC Tabs
 │   │   ├── store/             # Zustand state management
 │   │   └── types/             # Domain TypeScript interfaces & models
 │   ├── android/               # Android native project files
+│   │   └── app/
+│   │       └── google-services.json # Firebase Android config
 │   ├── ios/                   # iOS native project files
 │   └── package.json
 │
 ├── ⚙️ backend/                   # Node.js + Express API Server
 │   ├── src/
 │   │   └── app.ts             # Express server setup & payment endpoints
-│   ├── package.json
+│   ├── package.json           # Powered by nodemon + tsx
 │   └── tsconfig.json
 │
 ├── 🔒 firestore.rules            # Granular Firestore Security Rules for RBAC
@@ -91,24 +94,55 @@ Society/
 
 - **Mobile Frontend**: React Native CLI (`0.86`), TypeScript (`^5.8`), React Native Paper (`^5.15`), React Navigation (`v7`), `react-native-safe-area-context`, `react-native-vector-icons`.
 - **State Management & Data Fetching**: Zustand (`^5.0`), TanStack React Query (`^5.101`).
-- **Backend API**: Node.js, Express (`^4.19`), TypeScript, Razorpay Node SDK.
+- **Backend API**: Node.js, Express (`^5.2`), TypeScript, Razorpay Node SDK, `tsx` (TypeScript Executor).
 - **Database & Security**: Cloud Firestore, Firebase Admin SDK, Firebase Security Rules (`firestore.rules`).
 - **Utilities**: `date-fns`, `zod`, `react-hook-form`.
 
 ---
 
-## 🚀 Step-by-Step Setup & Execution
+## 🚀 Setup & Execution Guide
 
 ### 1. Prerequisites
 Ensure you have the following installed on your machine:
 - **Node.js** `>= 22.11.0`
 - **npm** or **yarn**
-- **Android Studio** (with Android SDK & Emulator configured) or **Xcode** (for Mac users targeting iOS).
+- **Android Studio** (with Android SDK & Emulator) or **Xcode** (for macOS targeting iOS).
 
 ---
 
-### 2. Mobile App Setup (React Native CLI)
+### 2. Database Connection (Firebase Setup)
+To connect the application to your Firebase account:
 
+1. **Create Firebase Project**: Visit [Firebase Console](https://console.firebase.google.com/) and register a new project.
+2. **Enable Services**:
+   - Go to **Authentication** and enable **Email/Password** sign-in.
+   - Go to **Firestore Database** and create a database in **Test Mode**.
+3. **Register Android App**: 
+   - Add an Android App with package name `com.society`.
+   - Download `google-services.json` and save it to `mobile/android/app/google-services.json`.
+4. **Register iOS App** (Optional):
+   - Add an iOS App and save `GoogleService-Info.plist` to `mobile/ios/Society/GoogleService-Info.plist`.
+5. **Backend credentials**:
+   - Go to **Project Settings** -> **Service Accounts**.
+   - Generate a new private key and save the JSON file as `backend/serviceAccountKey.json`.
+
+---
+
+### 3. Backend Setup
+```bash
+# Navigate to backend directory
+cd backend
+
+# Install dependencies
+npm install
+
+# Start Express server in development mode (Runs on http://localhost:5000 with auto-reload)
+npm run dev
+```
+
+---
+
+### 4. Mobile App Setup (React Native CLI)
 ```bash
 # Navigate to mobile app directory
 cd mobile
@@ -116,37 +150,17 @@ cd mobile
 # Install dependencies
 npm install
 
-# Option A: Start Metro Bundler
-npm start
-
-# Option B: Run on Android Emulator (in a separate terminal)
+# Run Metro Bundler & start Android app
 npm run android
 
-# Option C: Run on iOS Simulator (macOS only)
+# Or launch iOS Simulator (macOS only)
 npm run ios
 ```
 
 ---
 
-### 3. Backend Setup
-
-```bash
-# Navigate to backend directory
-cd backend
-
-# Install backend dependencies
-npm install
-
-# Start Express server in development mode (Runs on http://localhost:5000)
-npm run dev
-```
-
----
-
-### 4. Database Seeding (Firestore)
-
-To populate sample societies, units, users, bills, and visitor pre-approvals:
-
+### 5. Database Seeding (Firestore)
+To populate sample societies, units, users, and bills in Firestore:
 ```bash
 # Run database seed script from root
 npx ts-node scripts/seed.ts
@@ -155,31 +169,28 @@ npx ts-node scripts/seed.ts
 ---
 
 ## 🔑 Live Persona Switcher (Testing Mode)
-
 For development and demo testing, the mobile app includes an instant **Core Role Persona Switcher** inside the **Profile Screen**:
 - Toggle seamlessly between **Super Admin**, **Society Admin**, **Resident**, and **Security Guard**.
 - Navigation tabs and permissions update dynamically without logging out.
 
 ---
 
-## ❓ Common Troubleshooting & FAQ
+## ❓ Troubleshooting & FAQs
 
-#### Q1: `sh: react-native: command not found` or `EJSONPARSE`
-**Fix**: Ensure `mobile/package.json` is clean valid JSON, then run `npm install` inside the `mobile/` directory to link `.bin` executables properly.
+#### Q1: `EADDRINUSE: address already in use :::8081`
+**Fix**: Metro is already running in another process (e.g. from your `npm run android` terminal). You do not need to run `npm start` separately.
 
-#### Q2: Metro bundler module resolution issue
-**Fix**: Reset Metro cache by starting Metro with the clear cache flag:
-```bash
-npx react-native start --reset-cache
-```
-
-#### Q3: Android build failures (`./gradlew app:installDebug`)
+#### Q2: Android build failures (`./gradlew app:installDebug`)
 **Fix**:
-1. Ensure your Android Emulator is booted (`adb devices`).
+1. Ensure your emulator is booted and visible in `adb devices`.
 2. Clean gradle cache:
-```bash
-cd mobile/android
-./gradlew clean
-cd ..
-npx @react-native-community/cli run-android
-```
+   ```bash
+   cd mobile/android && ./gradlew clean && cd ..
+   ```
+3. Restart metro bundle clearing cache:
+   ```bash
+   npx react-native start --reset-cache
+   ```
+
+#### Q3: Backend fails to launch with typescript errors
+**Fix**: The backend configuration uses `tsx` to run files directly. Ensure you launch using `npm run dev` to invoke nodemon with tsx execution.
