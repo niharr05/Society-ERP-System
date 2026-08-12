@@ -12,7 +12,7 @@ interface AuthState {
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  user: MOCK_USERS[0],
+  user: MOCK_USERS[1],
   isAuthenticated: true,
   isLoading: false,
 

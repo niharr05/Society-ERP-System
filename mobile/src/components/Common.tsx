@@ -121,6 +121,8 @@ const styles = StyleSheet.create({
     color: '#64748B',
     fontWeight: '700',
     fontSize: 12,
+    flex: 1,
+    marginRight: 8,
   },
   value: {
     fontWeight: '800',

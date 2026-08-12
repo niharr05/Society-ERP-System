@@ -14,6 +14,8 @@ import { IssueBillScreen } from '../features/billing/IssueBillScreen';
 import { ComplaintsListScreen } from '../features/complaints/ComplaintsListScreen';
 import { VisitorsScreen } from '../features/visitors/VisitorsScreen';
 import { CreateNoticeScreen } from '../features/notices/CreateNoticeScreen';
+import { OnboardSocietyScreen } from '../features/society/OnboardSocietyScreen';
+import { AssignAdminScreen } from '../features/society/AssignAdminScreen';
 import { ProfileScreen } from '../features/profile/ProfileScreen';
 import { useAuthStore } from '../store/useAuthStore';
 import { AppColors } from '../config/theme';
@@ -27,6 +29,9 @@ export const RootNavigator = () => {
 
   // Sub-screen navigation states for Admin
   const [activeAdminSubScreen, setActiveAdminSubScreen] = useState<'DASHBOARD' | 'ISSUE_BILL' | 'CREATE_NOTICE'>('DASHBOARD');
+
+  // Sub-screen navigation states for Super Admin
+  const [activeSuperAdminSubScreen, setActiveSuperAdminSubScreen] = useState<'DASHBOARD' | 'ONBOARD_SOCIETY' | 'ASSIGN_ADMIN'>('DASHBOARD');
 
   useEffect(() => {
     // Show splash loading screen on startup
@@ -79,12 +84,26 @@ export const RootNavigator = () => {
       {role === 'SUPER_ADMIN' && (
         <Tab.Screen
           name="SuperAdminHome"
-          component={SuperAdminDashboardScreen}
           options={{
-            title: 'SaaS Platform',
+            title: activeSuperAdminSubScreen === 'ONBOARD_SOCIETY' ? 'Onboard Society' : activeSuperAdminSubScreen === 'ASSIGN_ADMIN' ? 'Assign Admin' : 'SaaS Platform',
             tabBarIcon: ({ color, size }) => <Icon name="domain" size={size} color="#8B5CF6" />,
           }}
-        />
+        >
+          {() => {
+            if (activeSuperAdminSubScreen === 'ONBOARD_SOCIETY') {
+              return <OnboardSocietyScreen onBack={() => setActiveSuperAdminSubScreen('DASHBOARD')} />;
+            }
+            if (activeSuperAdminSubScreen === 'ASSIGN_ADMIN') {
+              return <AssignAdminScreen onBack={() => setActiveSuperAdminSubScreen('DASHBOARD')} />;
+            }
+            return (
+              <SuperAdminDashboardScreen
+                onNavigateToOnboard={() => setActiveSuperAdminSubScreen('ONBOARD_SOCIETY')}
+                onNavigateToAssignAdmin={() => setActiveSuperAdminSubScreen('ASSIGN_ADMIN')}
+              />
+            );
+          }}
+        </Tab.Screen>
       )}
 
       {role === 'SOCIETY_ADMIN' && (

@@ -2,6 +2,17 @@ import { User } from '../types';
 
 export const MOCK_USERS: User[] = [
   {
+    uid: 'super_admin_1',
+    name: 'Platform Owner',
+    email: 'superadmin@society.com',
+    phone: '+91 9876543200',
+    role: 'SUPER_ADMIN',
+    societyId: 'platform',
+    status: 'ACTIVE',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
     uid: 'admin_1',
     name: 'Rajesh Sharma',
     email: 'admin@society.com',
@@ -40,3 +51,4 @@ export const MOCK_USERS: User[] = [
     updatedAt: new Date().toISOString(),
   },
 ];
+

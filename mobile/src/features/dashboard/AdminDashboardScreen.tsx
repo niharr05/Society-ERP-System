@@ -195,7 +195,7 @@ export const AdminDashboardScreen: React.FC<AdminDashboardProps> = ({
             <View style={styles.tooltipRow}>
               <View style={{ flex: 1 }}>
                 <Text style={styles.tooltipTitle}>{selectedPoint.month} Summary</Text>
-                <View style={{ flexDirection: 'row', gap: 12, marginTop: 2 }}>
+                <View style={{ flexDirection: 'row', gap: 12, marginTop: 2, flexWrap: 'wrap' }}>
                   <Text style={{ fontSize: 12, color: '#059669', fontWeight: '700' }}>
                     🟢 Collection: ₹ {selectedPoint.collection} L
                   </Text>

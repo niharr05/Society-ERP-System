@@ -14,7 +14,10 @@ const MONTHS_LIST = [
   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
 ];
 
-export const SuperAdminDashboardScreen = () => {
+export const SuperAdminDashboardScreen: React.FC<{
+  onNavigateToOnboard?: () => void;
+  onNavigateToAssignAdmin?: () => void;
+}> = ({ onNavigateToOnboard, onNavigateToAssignAdmin }) => {
   const theme = useTheme();
   const { user } = useAuthStore();
   const [refreshing, setRefreshing] = React.useState(false);
@@ -201,7 +204,7 @@ export const SuperAdminDashboardScreen = () => {
             <View style={styles.tooltipRow}>
               <View style={{ flex: 1 }}>
                 <Text style={styles.tooltipTitle}>{selectedPoint.month} Growth Report</Text>
-                <View style={{ flexDirection: 'row', gap: 12, marginTop: 2 }}>
+                <View style={{ flexDirection: 'row', gap: 12, marginTop: 2, flexWrap: 'wrap' }}>
                   <Text style={{ fontSize: 12, color: '#8B5CF6', fontWeight: '700' }}>
                     🟣 ARR: ₹ {selectedPoint.revenue} L
                   </Text>
@@ -314,10 +317,10 @@ export const SuperAdminDashboardScreen = () => {
         Platform Controls
       </Text>
       <View style={styles.actionsRow}>
-        <Button mode="contained" icon="plus" buttonColor="#8B5CF6" style={styles.actionBtn} onPress={() => {}}>
+        <Button mode="contained" icon="plus" buttonColor="#8B5CF6" style={styles.actionBtn} onPress={onNavigateToOnboard}>
           Onboard Society
         </Button>
-        <Button mode="contained-tonal" icon="shield-account" style={styles.actionBtn} onPress={() => {}}>
+        <Button mode="contained-tonal" icon="shield-account" style={styles.actionBtn} onPress={onNavigateToAssignAdmin}>
           Assign Admin
         </Button>
       </View>
