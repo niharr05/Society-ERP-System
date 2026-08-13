@@ -109,7 +109,7 @@ export const ProfileScreen = () => {
         <View style={styles.infoRow}>
           <Icon name="office-building" size={18} color="#2563EB" />
           <Text style={styles.infoText}>
-            Society: <Text style={styles.infoHighlight}>Royal Heights Co-op Housing</Text>
+            Society: <Text style={styles.infoHighlight}>{user?.societyName || 'Royal Heights Co-op Society'}</Text>
           </Text>
         </View>
 

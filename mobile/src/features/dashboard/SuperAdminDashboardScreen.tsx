@@ -6,6 +6,7 @@ import { StatCard, StatusBadge } from '../../components/Common';
 import { AnimatedGlassCard } from '../../components/AnimatedGlassCard';
 import { useAuthStore } from '../../store/useAuthStore';
 import { AppColors } from '../../config/theme';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const screenWidth = Dimensions.get('window').width - 32;
 
@@ -19,7 +20,7 @@ export const SuperAdminDashboardScreen: React.FC<{
   onNavigateToAssignAdmin?: () => void;
 }> = ({ onNavigateToOnboard, onNavigateToAssignAdmin }) => {
   const theme = useTheme();
-  const { user } = useAuthStore();
+  const { user, switchSociety } = useAuthStore();
   const [refreshing, setRefreshing] = React.useState(false);
 
   // Time Range Filter State: ALL (12M) | 6M | 3M | Single Month Selection
@@ -115,6 +116,32 @@ export const SuperAdminDashboardScreen: React.FC<{
         <Avatar.Text size={44} label="SA" style={{ backgroundColor: '#8B5CF6' }} />
       </View>
 
+      {/* Switched Society Active Context Banner */}
+      <View style={{
+        backgroundColor: '#F5F3FF',
+        borderRadius: 12,
+        padding: 12,
+        marginBottom: 16,
+        borderWidth: 1,
+        borderColor: '#DDD6FE',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1 }}>
+          <Icon name="office-building" size={20} color="#8B5CF6" />
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 10, color: '#64748B', fontWeight: '700' }}>ACTIVE SOCIETY CONTEXT</Text>
+            <Text style={{ fontSize: 13, color: '#0F172A', fontWeight: '800' }} numberOfLines={1}>
+              {user?.societyName || 'Royal Heights Co-op Society'}
+            </Text>
+          </View>
+        </View>
+        <Chip style={{ backgroundColor: '#E0E7FF' }} textStyle={{ color: '#4F46E5', fontWeight: '800', fontSize: 9 }}>
+          {user?.societyId === 'soc_2' ? 'PUNE' : user?.societyId === 'soc_3' ? 'BANGALORE' : 'MUMBAI'}
+        </Chip>
+      </View>
+
       {/* Global SaaS Platform Metrics */}
       <View style={styles.statsGrid}>
         <View style={styles.gridItem}>
@@ -166,11 +193,11 @@ export const SuperAdminDashboardScreen: React.FC<{
       <AnimatedGlassCard delay={150} style={styles.professionalChartCard}>
         {/* Card Header & Preset Chips */}
         <View style={styles.chartHeaderRow}>
-          <View>
-            <Text variant="titleSmall" style={{ fontWeight: '800', color: '#0F172A' }}>
+          <View style={{ flex: 1, marginRight: 8 }}>
+            <Text variant="titleSmall" style={{ fontWeight: '800', color: '#0F172A' }} numberOfLines={1}>
               Platform ARR & Expansion
             </Text>
-            <Text variant="bodySmall" style={{ color: '#64748B' }}>
+            <Text variant="bodySmall" style={{ color: '#64748B' }} numberOfLines={1}>
               Tap nodes to inspect monthly MRR
             </Text>
           </View>
@@ -179,6 +206,7 @@ export const SuperAdminDashboardScreen: React.FC<{
               <Chip
                 key={preset}
                 selected={timeFilter === preset}
+                showSelectedCheck={false}
                 onPress={() => {
                   setTimeFilter(preset);
                   const ds = getActiveChartData();
@@ -329,21 +357,50 @@ export const SuperAdminDashboardScreen: React.FC<{
       <Text variant="titleMedium" style={styles.sectionTitle}>
         Registered Housing Societies
       </Text>
-      {societies.map((soc, idx) => (
-        <AnimatedGlassCard key={soc.id} delay={idx * 100} style={{ padding: 16, marginBottom: 8 }}>
-          <View style={styles.row}>
-            <View style={{ flex: 1 }}>
-              <Text variant="titleSmall" style={{ fontWeight: '800', color: '#0F172A' }}>
-                {soc.name}
-              </Text>
-              <Text variant="bodySmall" style={{ color: '#64748B', fontWeight: '600' }}>
-                {soc.city} • {soc.units} Units • Monthly Rev: {soc.revenue}
-              </Text>
+      {societies.map((soc, idx) => {
+        const isCurrent = user?.societyId === soc.id || user?.societyId === ('soc_' + soc.id) || 
+          (soc.id === '1' && (user?.societyId === 'platform' || !user?.societyId));
+        return (
+          <AnimatedGlassCard key={soc.id} delay={idx * 100} style={{ padding: 16, marginBottom: 8 }}>
+            <View style={styles.row}>
+              <View style={{ flex: 1, marginRight: 8 }}>
+                <Text variant="titleSmall" style={{ fontWeight: '800', color: '#0F172A' }}>
+                  {soc.name}
+                </Text>
+                <Text variant="bodySmall" style={{ color: '#64748B', fontWeight: '600' }}>
+                  {soc.city} • {soc.units} Units • Monthly Rev: {soc.revenue}
+                </Text>
+              </View>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <StatusBadge status={soc.status} />
+                {isCurrent ? (
+                  <Chip
+                    compact
+                    style={{ backgroundColor: '#ECFDF5', borderWidth: 1, borderColor: '#A7F3D0' }}
+                    textStyle={{ color: '#059669', fontSize: 10, fontWeight: '800' }}
+                  >
+                    Active
+                  </Chip>
+                ) : (
+                  <TouchableOpacity
+                    onPress={() => switchSociety('soc_' + soc.id, soc.name)}
+                    style={{
+                      backgroundColor: '#FFFFFF',
+                      borderWidth: 1,
+                      borderColor: '#8B5CF6',
+                      borderRadius: 12,
+                      paddingHorizontal: 10,
+                      paddingVertical: 4,
+                    }}
+                  >
+                    <Text style={{ color: '#8B5CF6', fontSize: 10, fontWeight: '800' }}>Switch</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
             </View>
-            <StatusBadge status={soc.status} />
-          </View>
-        </AnimatedGlassCard>
-      ))}
+          </AnimatedGlassCard>
+        );
+      })}
 
       <View style={{ height: 40 }} />
     </ScrollView>

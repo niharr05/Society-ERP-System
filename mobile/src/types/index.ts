@@ -11,6 +11,7 @@ export interface User {
   phone: string;
   role: UserRole;
   societyId: string;
+  societyName?: string;
   unitId?: string;
   unitNumber?: string;
   block?: string;
